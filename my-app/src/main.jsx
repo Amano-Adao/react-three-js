@@ -6,15 +6,28 @@ import { createRoot } from 'react-dom/client'
 import React, { useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useLoader } from '@react-three/fiber'
+import { useGLTF } from '@react-three/drei'
+
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Suspense } from "react";
+import { OrbitControls } from "@react-three/drei";
+import {Environment} from './env.jsx'
+/*
 const Model = ()=>{
-    const gltf = useLoader((GLTFLoader, './scene.gltf'));
+    const gltf = useLoader((GLTFLoader, '../scene.gltf'));
     return (
         <>
             <primitive object={gltf.scene} scale={0.4} />
         </>
     );
+} */
+function Model(props) {
+    const { nodes, materials } = useGLTF('./scene.gltf')
+    return (
+        <group {...props} dispose={null}>
+            <mesh geometry={nodes.Object_2.geometry} material={materials['767c8b7b_1260_4325_b83f_f635800d9059_Standard00E280']} rotation={[-Math.PI / 2, 0, 0]} />
+        </group>
+    )
 }
 function Sphere(props){
     const ref = useRef()
@@ -61,10 +74,10 @@ function Box(props) {
 
 createRoot(document.getElementById('root')).render(
     <Canvas>
-        <ambientLight intensity={Math.PI / 2} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
-        <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-        <Box position={[-1.2, 0, 0]} />
-        <Model position={[0, 0, 0]} />
+        <Suspense fallback={null}>
+            <Model/>
+            <OrbitControls />
+            <Environment/>
+        </Suspense>
     </Canvas>,
 )
